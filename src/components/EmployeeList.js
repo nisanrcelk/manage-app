@@ -4,6 +4,7 @@ import { useContext, useEffect, useState } from "react";
 import { EmployeeContext } from "../contexts/EmployeeContext";
 import { Button, Modal,Alert } from 'react-bootstrap'
 import AddForm from "./AddForm";
+import Pagination from "./Pagination";
 
 const Employeelist = () => {
 
@@ -12,12 +13,18 @@ const Employeelist = () => {
     //değişiklik olduğunda tekrar render ediyor
     const [show, setShow] = useState(false)   //modalin gösterip gösterilmeyeceği state olarak tanımlandı
     //fonk tanımlarken () kullanıyoruz her birinde const ile tanımlıyoruz
+    const [currentPage,setCurrentPage]=useState(1)
+    const [employeesPerPage]=useState(1);
+    
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true)
     // <> bu kapsayıcı görevi görüyor
     const [showAlert,setShowAlert]=useState(false)
     const handleShowAlert=()=>{
         setShowAlert(true)
+        setTimeout(()=>{
+            setShowAlert(false)
+        },2000)
     }
 
     useEffect(() => {
@@ -38,11 +45,13 @@ const Employeelist = () => {
     //id yerine ref kullanmamızın sebebi component kendisini tekrar render etmiyo useRef sağlıyor
     //id kullansaydık tekrar render edilirdi
 
+    const indexOfLastEmployee= currentPage * employeesPerPage ;
+    const indexOfFirstEmployee=indexOfLastEmployee-employeesPerPage;
+    const currentEmployees =employees.slice(indexOfFirstEmployee,indexOfLastEmployee)
+    const totalPagesNum=Math.ceil(employees.length/employeesPerPage)
 
-
-
-
-    return (
+    
+    return ( 
         <>
             <div className="table-title">
                 <div className="row">
@@ -70,7 +79,7 @@ const Employeelist = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {employees.sort((a,b)=>a.name.localeCompare(b.name)).map((employee)=>(
+                    {currentEmployees.sort((a,b)=>a.name.localeCompare(b.name)).map((employee)=>(
                        <tr key={employee.id}>
                         <Employee employee={employee}></Employee>
 
@@ -79,6 +88,7 @@ const Employeelist = () => {
                 </tbody>
             </table>
 
+        <Pagination pages={totalPagesNum} setCurrentPage={setCurrentPage} employeeNumber={currentEmployees} totalEmployee={employees} ></Pagination>
             <Modal show={show} onHide={handleClose} >
                 <Modal.Header className="modal-header" closeButton>
                     <Modal.Title>

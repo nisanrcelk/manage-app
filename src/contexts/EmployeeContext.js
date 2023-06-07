@@ -1,4 +1,4 @@
-  import {createContext,useState} from 'react';
+  import {createContext,useEffect,useState} from 'react';
   import { v4 as uuidv4 } from 'uuid';
 
   export const EmployeeContext= createContext();
@@ -11,6 +11,15 @@
         {id:uuidv4(),name:'Nisanur Çelik',email:'nisancliik7@gmail.com',address:'Eryaman',phone:'111111'},
         {id:uuidv4(),name:'Buğlem Gören',email:'buglem@gmail.com',address:'Bilkent',phone:'22222222'}
     ])
+
+    useEffect(()=>{
+      const employees= localStorage.getItem('employees')
+      setEmployees(JSON.parse(employees))
+    },[])
+
+    useEffect(()=>{
+      localStorage.setItem('employees',JSON.stringify(employees))
+    })
 
     const addEmployee = (name,email,address,phone) =>{
     setEmployees([...employees,{id:uuidv4(),name,email,address,phone}])
